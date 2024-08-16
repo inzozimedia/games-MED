@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAY!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #000033, #330000);
+            margin: 0;
+            color: white;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 4em;
+            color: orange;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .game-button {
+            padding: 15px;
+            font-size: 1.2em;
+            color: white;
+            background-color: green;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .game-button:hover {
+            background-color: #004d00;
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            .game-button {
+                font-size: 1em;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>PLAY!</h1>
+
+    <div class="button-container">
+        <a href="games/memory.html" class="game-button">Memory Game</a>
+        <a href="games/tic tac toe.html" class="game-button">Tic Tac Toe</a>
+        <a href="games/snake.html" class="game-button">Snake Game</a>
+        <a href="games/pong.html" class="game-button">Pong Game</a>
+        <a href="games/connect four.html" class="game-button">Connect Four</a>
+        <a href="games/sudoku.html" class="game-button">sudoku game</a>
+        <a href="games/breakout.html" class="game-button">breakout</a>
+        <a href="games/hangman.html" class="game-button">Hangman</a>
+    </div>
+
+</body>
+</html>
