@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, darkblue, purple);
+            color: white;
+            margin: 0;
+        }
+
+        h1 {
+            color: skyblue;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            background-color: green;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        button:hover {
+            background-color: #004d00;
+            transform: translateY(-5px);
+        }
+
+        #footer {
+            font-size: 1em;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-container {
+            display: none;
+        }
+
+        .hangman-word {
+            font-size: 2em;
+            margin: 20px;
+        }
+
+        .hangman-letters {
+            margin: 20px;
+        }
+
+        .hangman-letters button {
+            font-size: 1.2em;
+            margin: 5px;
+            padding: 10px;
+        }
+
+        .hangman-message {
+            margin: 20px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Hangman</h1>
+
+<button onclick="startGame('hangman')">Start Game</button>
+<div id="footer">by MKB20/24</div>
+
+<div id="hangman" class="game-container">
+    <h2>Hangman</h2>
+    <div id="hangmanWord" class="hangman-word"></div>
+    <div id="hangmanLetters" class="hangman-letters"></div>
+    <div id="hangmanMessage" class="hangman-message"></div>
+    <button onclick="restartHangman()">Restart Game</button>
+</div>
+
+<script>
+    function startGame(game) {
+        document.querySelector('h1').style.display = 'none';
+        document.querySelector('button').style.display = 'none';
+        document.querySelector('#footer').style.display = 'none';
+        document.querySelector(`#${game}`).style.display = 'block';
+        if (game === 'hangman') {
+            initHangman();
+        }
+    }
+
+    function restartHangman() {
+        initHangman();
+    }
+
+    function initHangman() {
+        const words = ['JAVASCRIPT', 'HTML', 'CSS', 'WEBDEVELOPMENT'];
+        const word = words[Math.floor(Math.random() * words.length)];
+        const wordDisplay = document.getElementById('hangmanWord');
+        const lettersDisplay = document.getElementById('hangmanLetters');
+        const messageDisplay = document.getElementById('hangmanMessage');
+        const guessedLetters = new Set();
+        let incorrectGuesses = 0;
+
+        function updateDisplay() {
+            wordDisplay.textContent = word.split('').map(letter => guessedLetters.has(letter) ? letter : '_').join(' ');
+            lettersDisplay.innerHTML = '';
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
+                if (!guessedLetters.has(letter)) {
+                    const button = document.createElement('button');
+                    button.textContent = letter;
+                    button.onclick = () => guessLetter(letter);
+                    lettersDisplay.appendChild(button);
+                }
+            });
+
+            if (word.split('').every(letter => guessedLetters.has(letter))) {
+                messageDisplay.textContent = 'You Win!';
+            } else if (incorrectGuesses >= 6) {
+                messageDisplay.textContent = 'Game Over! The word was: ' + word;
+            }
+        }
+
+        function guessLetter(letter) {
+            guessedLetters.add(letter);
+            if (!word.includes(letter)) {
+                incorrectGuesses++;
+            }
+            updateDisplay();
+        }
+
+        updateDisplay();
+    }
+</script>
+
+</body>
+</html>

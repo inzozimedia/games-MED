@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Four</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, darkblue, purple);
+            color: white;
+            margin: 0;
+        }
+
+        h1 {
+            color: skyblue;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            background-color: green;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        button:hover {
+            background-color: #004d00;
+            transform: translateY(-5px);
+        }
+
+        #footer {
+            font-size: 1em;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-container {
+            display: none;
+        }
+
+        .connect-four-board {
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            gap: 5px;
+        }
+
+        .connect-four-cell {
+            width: 50px;
+            height: 50px;
+            background: #ddd;
+            border: 1px solid #333;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .connect-four-cell.red {
+            background: red;
+        }
+
+        .connect-four-cell.yellow {
+            background: yellow;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Connect Four</h1>
+
+<button onclick="startGame('connect-four')">Start Game</button>
+<div id="footer">by MKB20/24</div>
+
+<div id="connect-four" class="game-container">
+    <h2>Connect Four</h2>
+    <div id="connectFourBoard" class="connect-four-board"></div>
+    <button onclick="restartConnectFour()">Restart Game</button>
+</div>
+
+<script>
+    function startGame(game) {
+        document.querySelector('h1').style.display = 'none';
+        document.querySelector('button').style.display = 'none';
+        document.querySelector('#footer').style.display = 'none';
+        document.querySelector(`#${game}`).style.display = 'block';
+        if (game === 'connect-four') {
+            initConnectFour();
+        }
+    }
+
+    function restartConnectFour() {
+        initConnectFour();
+    }
+
+    function initConnectFour() {
+        const board = document.getElementById('connectFourBoard');
+        board.innerHTML = '';
+        const rows = 6, cols = 7;
+        let currentPlayer = 'red';
+        const grid = Array.from({ length: rows }, () => Array(cols).fill(null));
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = document.createElement('div');
+                cell.classList.add('connect-four-cell');
+                cell.addEventListener('click', () => dropDisc(c));
+                board.appendChild(cell);
+            }
+        }
+
+        function dropDisc(col) {
+            for (let row = rows - 1; row >= 0; row--) {
+                if (!grid[row][col]) {
+                    grid[row][col] = currentPlayer;
+                    updateBoard();
+                    if (checkWin(row, col)) {
+                        setTimeout(() => alert(currentPlayer + ' wins!'), 10);
+                    }
+                    currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
+                    break;
+                }
+            }
+        }
+
+        function updateBoard() {
+            const cells = board.querySelectorAll('.connect-four-cell');
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / cols);
+                const col = index % cols;
+                cell.className = 'connect-four-cell ' + (grid[row][col] || '');
+            });
+        }
+
+        function checkWin(row, col) {
+            const directions = [
+                { dr: 1, dc: 0 }, // vertical
+                { dr: 0, dc: 1 }, // horizontal
+                { dr: 1, dc: 1 }, // diagonal down-right
+                { dr: 1, dc: -1 } // diagonal down-left
+            ];
+
+            function countDiscs(dr, dc) {
+                let count = 0;
+                for (let i = 1; i < 4; i++) {
+                    const r = row + dr * i;
+                    const c = col + dc * i;
+                    if (r >= 0 && r < rows && c >= 0 && c < cols && grid[r][c] === currentPlayer) {
+                        count++;
+                    } else {
+                        break;
+                    }
+                }
+                return count;
+            }
+
+            return directions.some(({ dr, dc }) => {
+                return countDiscs(dr, dc) + countDiscs(-dr, -dc) >= 3;
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

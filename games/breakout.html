@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, darkblue, purple);
+            color: white;
+            margin: 0;
+        }
+
+        h1 {
+            color: skyblue;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            background-color: green;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        button:hover {
+            background-color: #004d00;
+            transform: translateY(-5px);
+        }
+
+        #footer {
+            font-size: 1em;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-container {
+            display: none;
+        }
+
+        canvas {
+            border: 1px solid white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Breakout</h1>
+
+<button onclick="startGame('breakout')">Start Game</button>
+<div id="footer">by MKB20/24</div>
+
+<div id="breakout" class="game-container">
+    <h2>Breakout</h2>
+    <canvas id="breakoutCanvas" width="800" height="400"></canvas>
+    <button onclick="restartBreakout()">Restart Game</button>
+</div>
+
+<script>
+    function startGame(game) {
+        document.querySelector('h1').style.display = 'none';
+        document.querySelector('button').style.display = 'none';
+        document.querySelector('#footer').style.display = 'none';
+        document.querySelector(`#${game}`).style.display = 'block';
+        if (game === 'breakout') {
+            initBreakout();
+        }
+    }
+
+    function restartBreakout() {
+        initBreakout();
+    }
+
+    function initBreakout() {
+        const canvas = document.getElementById('breakoutCanvas');
+        const ctx = canvas.getContext('2d');
+        const paddleWidth = 100, paddleHeight = 10;
+        const ballSize = 10;
+        const brickWidth = 75, brickHeight = 20;
+        const rows = 5, cols = 8;
+        const bricks = [];
+        let paddleX = (canvas.width - paddleWidth) / 2;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height - paddleHeight - ballSize;
+        let ballSpeedX = 4;
+        let ballSpeedY = -4;
+        let rightPressed = false;
+        let leftPressed = false;
+
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+        function keyDownHandler(e) {
+            if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = true;
+            if (e.key === 'Left' || e.key === 'ArrowLeft') leftPressed = true;
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = false;
+            if (e.key === 'Left' || e.key === 'ArrowLeft') leftPressed = false;
+        }
+
+        function drawPaddle() {
+            ctx.fillStyle = '#0095DD';
+            ctx.fillRect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            bricks.forEach(brick => {
+                ctx.beginPath();
+                ctx.rect(brick.x, brick.y, brickWidth, brickHeight);
+                ctx.fillStyle = '#0095DD';
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        function update() {
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            } else if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (ballX + ballSpeedX > canvas.width - ballSize || ballX + ballSpeedX < ballSize) {
+                ballSpeedX = -ballSpeedX;
+            }
+            if (ballY + ballSpeedY < ballSize) {
+                ballSpeedY = -ballSpeedY;
+            } else if (ballY + ballSpeedY > canvas.height - ballSize) {
+                if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+                    ballSpeedY = -ballSpeedY;
+                } else {
+                    document.location.reload();
+                }
+            }
+
+            bricks.forEach((brick, index) => {
+                if (ballX > brick.x && ballX < brick.x + brickWidth && ballY > brick.y && ballY < brick.y + brickHeight) {
+                    ballSpeedY = -ballSpeedY;
+                    bricks.splice(index, 1);
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            update();
+            requestAnimationFrame(draw);
+        }
+
+        function initBricks() {
+            for (let c = 0; c < cols; c++) {
+                for (let r = 0; r < rows; r++) {
+                    bricks.push({ x: c * (brickWidth + 10) + 30, y: r * (brickHeight + 10) + 30 });
+                }
+            }
+        }
+
+        initBricks();
+        draw();
+    }
+</script>
+
+</body>
+</html>
